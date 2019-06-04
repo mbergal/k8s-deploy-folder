@@ -1,0 +1,52 @@
+{{ $root := . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ubuntu
+  labels:
+    app: ubuntu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+      - name: ubuntu
+        image: "ubuntu:18.04"
+        command: [ "sleep" ]
+        args: ["infinity" ]
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: true
+      initContainers:
+      - name: unzip
+        image: "alpine"
+        command: [ "" ]
+        args: ["/etc/initial-data/k8s-deployfolder.zip", "-d", "/config" ]
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: false
+        {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
+        - name: {{ base $path | replace "." "-" }}
+          mountPath: /etc/initial-data/{{ base $path }}
+          subPath: {{ base $path }}
+          readOnly: true
+        {{ end }}
+      volumes:
+      - name: config
+        emptyDir: {}
+      {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
+      - name: {{ base $path | replace "." "-" }}
+        configMap:
+          name: {{ base $path }}
+      {{ end }}
+
+  
+---

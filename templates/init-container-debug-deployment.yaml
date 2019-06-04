@@ -1,0 +1,31 @@
+{{ $root := . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: init-container-debug
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+      - name: alpine
+        command: [ "sleep" ]
+        args: ["1024d" ]
+        {{ include "init-container" . | nindent 8 }}
+      volumes:
+      - name: config
+        emptyDir: {}
+      - name: startup
+        configMap:
+          name: init-container-startup
+      {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
+      - name: {{ base $path | replace "." "-" }}
+        configMap:
+          name: {{ base $path }}
+      {{ end }}
