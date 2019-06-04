@@ -17,3 +17,18 @@ volumeMounts:
 
 
 {{- end }}
+
+{{- define "init-volumes" }}
+
+- name: config
+  emptyDir: {}
+- name: startup
+  configMap:
+    name: init-container-startup
+{{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
+- name: {{ base $path | replace "." "-" }}
+  configMap:
+    name: {{ base $path }}
+{{ end }}
+
+{{- end }}

@@ -27,26 +27,8 @@ spec:
       initContainers:
       - name: unzip
         image: "alpine"
-        command: [ "" ]
-        args: ["/etc/initial-data/k8s-deployfolder.zip", "-d", "/config" ]
-        volumeMounts:
-        - name: config
-          mountPath: /config
-          readOnly: false
-        {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
-        - name: {{ base $path | replace "." "-" }}
-          mountPath: /etc/initial-data/{{ base $path }}
-          subPath: {{ base $path }}
-          readOnly: true
-        {{ end }}
+        command: [ "bash" ]
+        args: ["/etc/startup/startup.sh" ]
+        {{ include "init-container" . | nindent 8 }}
       volumes:
-      - name: config
-        emptyDir: {}
-      {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
-      - name: {{ base $path | replace "." "-" }}
-        configMap:
-          name: {{ base $path }}
-      {{ end }}
-
-  
----
+        {{ include "init-volumes" . | nindent 8 }}

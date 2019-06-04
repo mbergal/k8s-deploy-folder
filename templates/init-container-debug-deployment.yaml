@@ -19,13 +19,4 @@ spec:
         args: ["1024d" ]
         {{ include "init-container" . | nindent 8 }}
       volumes:
-      - name: config
-        emptyDir: {}
-      - name: startup
-        configMap:
-          name: init-container-startup
-      {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
-      - name: {{ base $path | replace "." "-" }}
-        configMap:
-          name: {{ base $path }}
-      {{ end }}
+        {{ include "init-volumes" . | nindent 8 }}
