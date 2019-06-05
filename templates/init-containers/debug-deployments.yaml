@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: init-container-win-debug
+  name: init-container-debug
 spec:
   replicas: 1
   selector:
@@ -14,17 +14,30 @@ spec:
         app: ubuntu
     spec:
       containers:
-      - name: windows
+      - name: init-container-debug
+        command: [ "sleep" ]
+        args: ["1024d" ]
+        {{ include "init-container" . | nindent 8 }}
+      volumes:
+        {{ include "init-volumes" . | nindent 8 }}
+
+{{ $root := . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: init-container-win-debug
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+      - name: main
         command: ["ping"]
         args: ["-t",  "127.0.0.1" ]
         {{ include "init-container-win" . | nindent 8 }}
- 
-#        image: "registry.k8s.local/windows-7z"
-#        volumeMounts:
-#        - mountPath: c:/etc/initial-data/data.zip.001
-#          name: data-zip-001
-#          subPath: data.zip.001
-#          readOnly: true
       volumes:
         {{ include "init-volumes" . | nindent 8 }}
       nodeSelector:
