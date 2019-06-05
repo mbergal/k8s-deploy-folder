@@ -12,3 +12,18 @@ binaryData:
 {{ end }}
 
 
+{{ $root := . }}
+{{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ base $path }}-win
+binaryData:
+  {{ base $path }}: |-
+    {{ $root.Files.Get $path | b64enc }}
+---
+
+{{ end }}
+
+
+

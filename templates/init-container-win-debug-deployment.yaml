@@ -1,0 +1,32 @@
+{{ $root := . }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: init-container-win-debug
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ubuntu
+  template:
+    metadata:
+      labels:
+        app: ubuntu
+    spec:
+      containers:
+      - name: windows
+        command: ["ping"]
+        args: ["-t",  "127.0.0.1" ]
+        {{ include "init-container-win" . | nindent 8 }}
+ 
+#        image: "registry.k8s.local/windows-7z"
+#        volumeMounts:
+#        - mountPath: c:/etc/initial-data/data.zip.001
+#          name: data-zip-001
+#          subPath: data.zip.001
+#          readOnly: true
+      volumes:
+        {{ include "init-volumes" . | nindent 8 }}
+      nodeSelector:
+        beta.kubernetes.io/os: windows
+

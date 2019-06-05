@@ -14,7 +14,7 @@ spec:
         app: ubuntu
     spec:
       containers:
-      - name: alpine
+      - name: init-container-debug
         command: [ "sleep" ]
         args: ["1024d" ]
         {{ include "init-container" . | nindent 8 }}

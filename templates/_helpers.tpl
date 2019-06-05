@@ -18,6 +18,25 @@ volumeMounts:
 
 {{- end }}
 
+{{- define "init-container-win" }}
+
+image: "registry.k8s.local/windows-7z"
+volumeMounts:
+- name: startup
+  mountPath: c:/etc/startup
+  readOnly: true
+- name: config
+  mountPath: c:/config
+  readOnly: false
+{{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
+- name: {{ base $path | replace "." "-" }}
+  mountPath: c:/etc/initial-data/{{ base $path }}
+  readOnly: true
+{{ end }}
+
+
+{{- end }}
+
 {{- define "init-volumes" }}
 
 - name: config
@@ -28,7 +47,7 @@ volumeMounts:
 {{ range $path, $bytes := .Files.Glob "helm-data/data.zip.**"  }}
 - name: {{ base $path | replace "." "-" }}
   configMap:
-    name: {{ base $path }}
+    name: {{ base $path }}-win
 {{ end }}
 
 {{- end }}
