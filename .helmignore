@@ -20,3 +20,6 @@
 .idea/
 *.tmproj
 data/
+ubuntu-zip/
+windows-7z/
+

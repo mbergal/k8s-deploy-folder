@@ -29,6 +29,42 @@ spec:
         image: "alpine"
         command: [ "bash" ]
         args: ["/etc/startup/startup.sh" ]
-        {{ include "init-container" . | nindent 8 }}
+      volumes:
+        {{ include "init-volumes" . | nindent 8 }}
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: windows
+  labels:
+    app: windows
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: windows
+  template:
+    metadata:
+      labels:
+        app: windows
+    spec:
+      containers:
+      - name: windows
+        image: "registry.k8s.local/windows-7z"
+        command: ["ping"]
+        args: ["-t",  "127.0.0.1" ]
+        volumeMounts:
+          - name: config
+            mountPath: c:/config
+          - name: startup
+            mountPath: c:/etc/startup
+      initContainers:
+      - name: init
+        command: [ "powershell" ]
+        args: ["/etc/startup/startup.ps1" ]
+        {{ include "init-container-win" . | nindent 8 }}
       volumes:
         {{ include "init-volumes" . | nindent 8 }}
