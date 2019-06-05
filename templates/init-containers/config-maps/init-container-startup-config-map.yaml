@@ -4,6 +4,6 @@ metadata:
   name: init-container-startup
 data: 
   startup.sh: |-
-    cd /etc/initial-data
-    cat data.zip.* > data.zip && zip -FF data.zip --out data-full.zip && unzip data-full.zip -d /config
-   
+    {{ .Files.Get "scripts/init-container-startup.sh" | nindent 4 }}
+  startup.ps1: |-
+    {{ .Files.Get "scripts/init-container-startup.ps1" | nindent 4 }}

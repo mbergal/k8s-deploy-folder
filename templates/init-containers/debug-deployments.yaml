@@ -5,10 +5,13 @@ metadata:
   name: init-container-linux-debug
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: init-container-linux-debug
   template:
     metadata:
       labels:
-        app: ubuntu
+        app: init-container-linux-debug
     spec:
       containers:
       - name: init-container-debug
@@ -29,7 +32,13 @@ metadata:
   name: init-container-win-debug
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: init-container-win-debug
   template:
+    metadata:
+      labels:
+        app: init-container-win-debug
     spec:
       containers:
       - name: main
@@ -40,4 +49,5 @@ spec:
         {{ include "init-volumes" . | nindent 8 }}
       nodeSelector:
         beta.kubernetes.io/os: windows
+
 
