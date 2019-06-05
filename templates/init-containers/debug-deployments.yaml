@@ -2,12 +2,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: init-container-debug
+  name: init-container-linux-debug
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: ubuntu
   template:
     metadata:
       labels:
@@ -20,6 +17,10 @@ spec:
         {{ include "init-container" . | nindent 8 }}
       volumes:
         {{ include "init-volumes" . | nindent 8 }}
+      nodeSelector:
+        beta.kubernetes.io/os: linux
+
+---
 
 {{ $root := . }}
 apiVersion: apps/v1
@@ -29,9 +30,6 @@ metadata:
 spec:
   replicas: 1
   template:
-    metadata:
-      labels:
-        app: ubuntu
     spec:
       containers:
       - name: main
